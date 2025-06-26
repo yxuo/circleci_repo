@@ -7,6 +7,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Clone repo externo
+          command: git clone https://github.com/yxuo/circleci_playwright
+      - run:
           name: Install Yarn
           command: npm install --global yarn
       - run:

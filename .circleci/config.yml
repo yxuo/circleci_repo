@@ -7,17 +7,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clone repo externo
-          command: git clone https://github.com/yxuo/circleci_playwright
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Install Playwright
-          command: npx playwright install
-      - run:
-          name: Run Playwright Tests
-          command: npx playwright test --project=test-project
+          name: Rodar Playwright
+          command: |
+            git clone https://github.com/yxuo/circleci_playwright
+            cd circleci_playwright
+            npm install
+            npx playwright install
+            npx playwright test --project=test-project
 
 workflows:
   version: 2

@@ -13,6 +13,7 @@ jobs:
             cd circleci_playwright
             npm install
             npx playwright install
+            npx playwright install-deps
             npx playwright test --project=test-project
 
 workflows:

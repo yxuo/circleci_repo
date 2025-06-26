@@ -10,17 +10,14 @@ jobs:
           name: Clone repo externo
           command: git clone https://github.com/yxuo/circleci_playwright
       - run:
-          name: Install Yarn
-          command: npm install yarn
-      - run:
           name: Install Dependencies
-          command: yarn install
+          command: npm install
       - run:
           name: Install Playwright
-          command: yarn playwright install
+          command: npx playwright install
       - run:
           name: Run Playwright Tests
-          command: yarn playwright test --project=test-project
+          command: npx playwright test --project=test-project
 
 workflows:
   version: 2

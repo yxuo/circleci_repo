@@ -17,7 +17,7 @@ jobs:
           command: yarn install
       - run:
           name: Install Playwright
-          command: yarn playwright install
+          command: yarn add playwright
       - run:
           name: Run Playwright Tests
           command: yarn playwright test --project=test-project

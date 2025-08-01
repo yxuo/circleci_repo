@@ -16,7 +16,6 @@ jobs:
             # npx playwright install-deps
             # npx playwright test --project=test-project
 
-# Novo job para rodar Playwright após deploy alpha
   playwright_alpha_test:
     docker:
       - image: cimg/node:20.15.1
@@ -38,8 +37,8 @@ jobs:
           name: Clonar e instalar dependências
           command: |
             # git clone https://github.com/yxuo/circleci_playwright
-            GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa_fingerprint'
-            git clone ssh://git@github.com:yxuo/circleci_playwright_priv.git
+            GIT_SSH_COMMAND='ssh -i -v ~/.ssh/id_rsa_fingerprint'
+            git clone git@github.com:yxuo/circleci_playwright_priv.git
             cd circleci_playwright
             npm install
             npx playwright install

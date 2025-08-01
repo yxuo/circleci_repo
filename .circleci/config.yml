@@ -29,11 +29,12 @@ jobs:
             cd circleci_playwright
             npm install
             npx playwright install
+            npx playwright install-deps
       - run:
           name: Rodar testes Playwright e gerar report
           command: |
-            cd circleci_playwright; mkdir output;
-            npx playwright test --project=test-project --reporter=html;
+            cd circleci_playwright; mkdir output
+            npx playwright test --project=test-project
       # - run:
       #     name: Extrair resumo dos testes
       #     command: |

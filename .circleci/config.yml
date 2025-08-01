@@ -26,13 +26,19 @@ jobs:
           fingerprints:
             - "SHA256:fp2ielY5C50hV9XC/fW2xBwo9rWYA0WjPyu3kzzy1iA raphaelrivas@hotmail.com"
       - run:
+          name: Adicionar github.com ao known_hosts
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run :
+          name: Verificar se chave SSH está configurada corretamente
+          command: |
+            ssh -T git@github.com || (echo "SSH key not configured correctly. Please check your SSH settings." && exit 1)
+      - run:
           name: Clonar e instalar dependências
           command: |
             # git clone https://github.com/yxuo/circleci_playwright
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:yxuo/circleci_playwright_priv.git
-            ls
             cd circleci_playwright
             npm install
             npx playwright install

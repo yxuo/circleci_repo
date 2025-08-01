@@ -55,10 +55,11 @@ jobs:
               FAILED=$(jq '[.suites[].specs[] | .tests[] | select(.results[].status=="failed")] | length' test-results/results.json)
               if [ -z "$FAILED" ]; then FAILED=0; fi
               if [ -z "$TOTAL" ]; then TOTAL=0; fi
+              ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
               if [ "$FAILED" -gt 0 ]; then
-                MSG="Backend - Teste alpha: $FAILED erro(s) de $TOTAL testes. Report: $CIRCLE_BUILD_URL/artifacts/0/circleci_playwright/playwright-report/index.html"
+                MSG="Backend - Teste alpha: $FAILED erro(s) de $TOTAL testes. Report: $ARTIFACT_URL"
               else
-                MSG="Backend - Teste alpha: Todos os $TOTAL testes passaram. Report: $CIRCLE_BUILD_URL/artifacts/0/circleci_playwright/playwright-report/index.html"
+                MSG="Backend - Teste alpha: Todos os $TOTAL testes passaram. Report: $ARTIFACT_URL"
               fi
             fi
             curl --header "Content-Type: application/json" \

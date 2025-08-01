@@ -33,7 +33,7 @@ jobs:
           name: Rodar testes Playwright e gerar report
           command: |
             cd circleci_playwright; mkdir output;
-            npx playwright test --project=test-project --reporter=html > ./output/playwright_output.log; exit_code=$?; echo $exit_code > ./output/playwright_exit_code.txt;
+            npx playwright test --project=test-project --reporter=html;
       # - run:
       #     name: Extrair resumo dos testes
       #     command: |

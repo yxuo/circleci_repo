@@ -36,11 +36,11 @@ jobs:
             cd circleci_playwright; mkdir output
             npx playwright test --project=test-project > ./output/playwright_output.log; exit_code=$?; echo $exit_code > ./output/playwright_exit_code.txt; exit $exit_code
 
-      - run:
-          name: Extrair resumo dos testes
-          command: |
-            cd circleci_playwright
-            npx playwright show-report
+      # - run:
+      #     name: Extrair resumo dos testes
+      #     command: |
+      #       cd circleci_playwright
+      #       npx playwright show-report
       - store_artifacts:
           path: circleci_playwright/playwright-report
           destination: playwright-report

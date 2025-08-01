@@ -44,28 +44,69 @@ jobs:
       - store_artifacts:
           path: circleci_playwright/playwright-report
           destination: playwright-report
+      # - run:
+      #     name: Notificar Google Chat
+      #     command: |
+      #       cd circleci_playwright
+      #       if [ ! -f test-results/results.json ]; then
+      #         MSG="Backend - Teste alpha: Não foi possível encontrar o arquivo de resultados."
+      #       else
+      #         TOTAL=$(jq '[.suites[].specs[] | .tests | length] | add' test-results/results.json)
+      #         FAILED=$(jq '[.suites[].specs[] | .tests[] | select(.results[].status=="failed")] | length' test-results/results.json)
+      #         if [ -z "$FAILED" ]; then FAILED=0; fi
+      #         if [ -z "$TOTAL" ]; then TOTAL=0; fi
+      #         ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
+      #         if [ "$FAILED" -gt 0 ]; then
+      #           MSG="Backend - Teste alpha: $FAILED erro(s) de $TOTAL testes. Report: $ARTIFACT_URL"
+      #         else
+      #           MSG="Backend - Teste alpha: Todos os $TOTAL testes passaram. Report: $ARTIFACT_URL"
+      #         fi
+      #       fi
+      #       curl --header "Content-Type: application/json" \
+      #         --request POST \
+      #         --data "{\"text\":\"$MSG\"}" \
+      #         "https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
       - run:
-          name: Notificar Google Chat
+          name: Google Chat Fail Notification
+          when: on_fail
           command: |
-            cd circleci_playwright
-            if [ ! -f test-results/results.json ]; then
-              MSG="Backend - Teste alpha: Não foi possível encontrar o arquivo de resultados."
-            else
-              TOTAL=$(jq '[.suites[].specs[] | .tests | length] | add' test-results/results.json)
-              FAILED=$(jq '[.suites[].specs[] | .tests[] | select(.results[].status=="failed")] | length' test-results/results.json)
-              if [ -z "$FAILED" ]; then FAILED=0; fi
-              if [ -z "$TOTAL" ]; then TOTAL=0; fi
-              ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
-              if [ "$FAILED" -gt 0 ]; then
-                MSG="Backend - Teste alpha: $FAILED erro(s) de $TOTAL testes. Report: $ARTIFACT_URL"
-              else
-                MSG="Backend - Teste alpha: Todos os $TOTAL testes passaram. Report: $ARTIFACT_URL"
-              fi
-            fi
+            ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
+            CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
             curl --header "Content-Type: application/json" \
-              --request POST \
-              --data "{\"text\":\"$MSG\"}" \
-              "https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
+            --request POST \
+            --data "{\"cards\":[{\"header\":{\"title\":\"Ops! ${CIRCLE_JOB} failed.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://png.pngtree.com/svg/20170406/icon_failed__1325447.png\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"REPORT\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+            "$CHAT_INFRA"
+      - run:
+          name: Google Chat Successful Notification
+          when: on_success
+          command: |
+            ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
+            CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
+            curl --header "Content-Type: application/json" \
+            --request POST \
+            --data "{\"cards\":[{\"header\":{\"title\":\"${CIRCLE_JOB} successful.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"ARTEFATO\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+            "$CHAT_INFRA"
+
+# {CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"ARTEFATO\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+
+      # - run:
+      #     name: Google Chat Fail Notification
+      #     when: on_fail
+      #     command: |
+      #   ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
+      #   curl --header "Content-Type: application/json" \
+      #   --request POST \
+      #   --data "{\"cards\":[{\"header\":{\"title\":\"Ops! ${CIRCLE_JOB} failed.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://png.pngtree.com/svg/20170406/icon_failed__1325447.png\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"ARTEFATO\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+      #   "$CHAT_INFRA"
+      # - run:
+      #     name: Google Chat Successful Notification
+      #     when: on_success
+      #     command: |
+      #   ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
+      #   curl --header "Content-Type: application/json" \
+      #   --request POST \
+      #   --data "{\"cards\":[{\"header\":{\"title\":\"${CIRCLE_JOB} successful.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"ARTEFATO\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+      #   "$CHAT_INFRA"
 
 workflows:
   version: 2

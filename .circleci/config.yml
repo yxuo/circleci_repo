@@ -48,7 +48,7 @@ jobs:
             cd circleci_playwright_priv; mkdir output
             npx playwright test --project=test-project > ./output/playwright_output.log; exit_code=$?; echo $exit_code > ./output/playwright_exit_code.txt; exit $exit_code
       - store_artifacts:
-          path: circleci_playwright/playwright-report
+          path: circleci_playwright_priv/playwright-report
           destination: playwright-report
       - run:
           name: Google Chat Fail Notification

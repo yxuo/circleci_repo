@@ -29,19 +29,19 @@ jobs:
             cd circleci_playwright
             npm install
             npx playwright install
-      # - run:
-      #     name: Rodar testes Playwright e gerar report
-      #     command: |
-      #       cd circleci_playwright
-      #       npx playwright test --project=test-project --reporter=html > ../playwright_output.log; exit_code=$?; echo $exit_code > ../playwright_exit_code.txt; exit $exit_code
+      - run:
+          name: Rodar testes Playwright e gerar report
+          command: |
+            cd circleci_playwright; mkdir output
+            npx playwright test --project=test-project --reporter=html > ./output/playwright_output.log; exit_code=$?; echo $exit_code > ./output/playwright_exit_code.txt; exit $exit_code
       # - run:
       #     name: Extrair resumo dos testes
       #     command: |
       #       cd circleci_playwright
-      #       npx playwright show-report --reporter=html
-      # - store_artifacts:
-      #     path: circleci_playwright/playwright-report
-      #     destination: playwright-report
+      #       npx playwright show-report
+      - store_artifacts:
+          path: circleci_playwright/playwright-report
+          destination: playwright-report
       # - run:
       #     name: Notificar Google Chat
       #     command: |

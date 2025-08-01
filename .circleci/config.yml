@@ -30,15 +30,15 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run :
-          name: Verificar se chave SSH está configurada corretamente
-          command: |
-            ssh -T git@github.com
+      # - run :
+      #     name: Verificar se chave SSH está configurada corretamente
+      #     command: |
+      #       ssh -T git@github.com
       - run:
           name: Clonar e instalar dependências
           command: |
             # git clone https://github.com/yxuo/circleci_playwright
-            git clone git@github.com:yxuo/circleci_playwright_priv.git
+            git clone ssh://git@github.com:yxuo/circleci_playwright_priv.git
             cd circleci_playwright
             npm install
             npx playwright install

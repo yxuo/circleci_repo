@@ -44,20 +44,31 @@ jobs:
           command: |
             ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
             CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
+            # Calcula erros e total
+            cd circleci_playwright
+            TOTAL=$(jq '.stats.expected' test-results/results.json)
+            FAILED=$(jq '.stats.unexpected' test-results/results.json)
+            if [ -z "$FAILED" ]; then FAILED=0; fi
+            if [ -z "$TOTAL" ]; then TOTAL=0; fi
+            MSG="Backend - Teste alpha: $FAILED error(s) out of $TOTAL tests."
             curl --header "Content-Type: application/json" \
-            --request POST \
-            --data "{\"cards\":[{\"header\":{\"title\":\"Ops! ${CIRCLE_JOB} failed.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://png.pngtree.com/svg/20170406/icon_failed__1325447.png\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"REPORT\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
-            "$CHAT_INFRA"
+              --request POST \
+              --data "{\"cards\":[{\"header\":{\"title\":\"$MSG\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://png.pngtree.com/svg/20170406/icon_failed__1325447.png\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"REPORT\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+              "$CHAT_INFRA"
       - run:
           name: Google Chat Successful Notification
           when: on_success
           command: |
             ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
             CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
+            cd circleci_playwright
+            TOTAL=$(jq '.stats.expected' test-results/results.json)
+            if [ -z "$TOTAL" ]; then TOTAL=0; fi
+            MSG="Backend - Teste alpha: All $TOTAL tests passed \u263A"
             curl --header "Content-Type: application/json" \
-            --request POST \
-            --data "{\"cards\":[{\"header\":{\"title\":\"${CIRCLE_JOB} successful.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"REPORT\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
-            "$CHAT_INFRA"
+              --request POST \
+              --data "{\"cards\":[{\"header\":{\"title\":\"$MSG\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"REPORT\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+              "$CHAT_INFRA"
 
 workflows:
   version: 2

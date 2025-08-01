@@ -22,10 +22,14 @@ jobs:
       - image: cimg/node:20.15.1
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:fp2ielY5C50hV9XC/fW2xBwo9rWYA0WjPyu3kzzy1iA raphaelrivas@hotmail.com"
       - run:
           name: Clonar e instalar dependências
           command: |
-            git clone https://github.com/yxuo/circleci_playwright
+            # git clone https://github.com/yxuo/circleci_playwright
+            git clone git@github.com:yxuo/circleci_playwright_priv.git
             cd circleci_playwright
             npm install
             npx playwright install
@@ -43,8 +47,6 @@ jobs:
           when: on_fail
           command: |
             ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
-            CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
-            # Calcula erros e total
             cd circleci_playwright
             TOTAL=$(jq '.stats.expected' test-results/results.json)
             FAILED=$(jq '.stats.unexpected' test-results/results.json)
@@ -60,7 +62,6 @@ jobs:
           when: on_success
           command: |
             ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
-            CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
             cd circleci_playwright
             TOTAL=$(jq '.stats.expected' test-results/results.json)
             if [ -z "$TOTAL" ]; then TOTAL=0; fi

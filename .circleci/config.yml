@@ -24,11 +24,11 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "SHA256:fp2ielY5C50hV9XC/fW2xBwo9rWYA0WjPyu3kzzy1iA raphaelrivas@hotmail.com"
-      # - run:
-      #     name: Adicionar github.com ao known_hosts
-      #     command: |
-      #       mkdir -p ~/.ssh
-      #       ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run:
+          name: Adicionar github.com ao known_hosts
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
       # - run :
       #     name: Verificar se chave SSH está configurada corretamente
       #     command: |
@@ -37,16 +37,15 @@ jobs:
           name: Clonar e instalar dependências
           command: |
             # git clone https://github.com/yxuo/circleci_playwright
-            GIT_SSH_COMMAND='ssh -i -v ~/.ssh/id_rsa_fingerprint'
             git clone git@github.com:yxuo/circleci_playwright_priv.git
-            cd circleci_playwright
+            cd circleci_playwright_priv
             npm install
             npx playwright install
             npx playwright install-deps
       - run:
           name: Rodar testes Playwright e gerar report
           command: |
-            cd circleci_playwright; mkdir output
+            cd circleci_playwright_priv; mkdir output
             npx playwright test --project=test-project > ./output/playwright_output.log; exit_code=$?; echo $exit_code > ./output/playwright_exit_code.txt; exit $exit_code
       - store_artifacts:
           path: circleci_playwright/playwright-report
@@ -56,7 +55,7 @@ jobs:
           when: on_fail
           command: |
             ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
-            cd circleci_playwright
+            cd circleci_playwright_priv
             TOTAL=$(jq '.stats.expected' test-results/results.json)
             FAILED=$(jq '.stats.unexpected' test-results/results.json)
             if [ -z "$FAILED" ]; then FAILED=0; fi
@@ -71,7 +70,7 @@ jobs:
           when: on_success
           command: |
             ARTIFACT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/playwright-report/index.html"
-            cd circleci_playwright
+            cd circleci_playwright_priv
             TOTAL=$(jq '.stats.expected' test-results/results.json)
             if [ -z "$TOTAL" ]; then TOTAL=0; fi
             MSG="Backend - Teste alpha: All $TOTAL tests passed \u263A"

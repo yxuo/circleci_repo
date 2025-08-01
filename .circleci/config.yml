@@ -33,7 +33,7 @@ jobs:
       - run :
           name: Verificar se chave SSH está configurada corretamente
           command: |
-            ssh -T git@github.com || (echo "SSH key not configured correctly. Please check your SSH settings." && exit 1)
+            ssh -T git@github.com
       - run:
           name: Clonar e instalar dependências
           command: |

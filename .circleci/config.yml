@@ -56,7 +56,7 @@ jobs:
             CHAT_INFRA="https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
             curl --header "Content-Type: application/json" \
             --request POST \
-            --data "{\"cards\":[{\"header\":{\"title\":\"${CIRCLE_JOB} successful.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"ARTEFATO\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
+            --data "{\"cards\":[{\"header\":{\"title\":\"${CIRCLE_JOB} successful.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}\",\"imageUrl\":\"https://cdn.dribbble.com/users/314596/screenshots/3241132/media/8e2907a9f80400ee3f40865a3803e6c3.gif\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"Credits - ${CIRCLE_USERNAME}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}},{\"textButton\":{\"text\":\"REPORT\",\"onClick\":{\"openLink\":{\"url\":\"${ARTIFACT_URL}\"}}}}]}]}]}]}" \
             "$CHAT_INFRA"
 
 workflows:

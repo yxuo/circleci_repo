@@ -34,32 +34,37 @@ jobs:
           name: Rodar testes Playwright e gerar report
           command: |
             cd circleci_playwright; mkdir output
-            npx playwright test --project=test-project
-      # - run:
-      #     name: Extrair resumo dos testes
-      #     command: |
-      #       cd circleci_playwright
-      #       npx playwright show-report
-      # - store_artifacts:
-      #     path: circleci_playwright/playwright-report
-      #     destination: playwright-report
-      # - run:
-      #     name: Notificar Google Chat
-      #     command: |
-      #       EXIT_CODE=$(cat playwright_exit_code.txt)
-      #       TOTAL=$(grep -oP '\d+(?=\s+passed)' playwright_output.log | head -1)
-      #       FAILED=$(grep -oP '\d+(?=\s+failed)' playwright_output.log | head -1)
-      #       if [ -z "$FAILED" ]; then FAILED=0; fi
-      #       if [ -z "$TOTAL" ]; then TOTAL=0; fi
-      #       if [ "$FAILED" -gt 0 ]; then
-      #         MSG="Backend - Teste alpha: $FAILED erro(s) de $((TOTAL+FAILED)) testes. Report: $CIRCLE_BUILD_URL/artifacts/0/circleci_playwright/playwright-report/index.html"
-      #       else
-      #         MSG="Backend - Teste alpha: Todos os $TOTAL testes passaram. Report: $CIRCLE_BUILD_URL/artifacts/0/circleci_playwright/playwright-report/index.html"
-      #       fi
-      #       curl --header "Content-Type: application/json" \
-      #         --request POST \
-      #         --data "{\"text\":\"$MSG\"}" \
-      #         "https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
+            npx playwright test --project=test-project > ./output/playwright_output.log; exit_code=$?; echo $exit_code > ./output/playwright_exit_code.txt; exit $exit_code
+
+      - run:
+          name: Extrair resumo dos testes
+          command: |
+            cd circleci_playwright
+            npx playwright show-report
+      - store_artifacts:
+          path: circleci_playwright/playwright-report
+          destination: playwright-report
+      - run:
+          name: Notificar Google Chat
+          command: |
+            cd circleci_playwright
+            if [ ! -f test-results/results.json ]; then
+              MSG="Backend - Teste alpha: Não foi possível encontrar o arquivo de resultados."
+            else
+              TOTAL=$(jq '[.suites[].specs[] | .tests | length] | add' test-results/results.json)
+              FAILED=$(jq '[.suites[].specs[] | .tests[] | select(.results[].status=="failed")] | length' test-results/results.json)
+              if [ -z "$FAILED" ]; then FAILED=0; fi
+              if [ -z "$TOTAL" ]; then TOTAL=0; fi
+              if [ "$FAILED" -gt 0 ]; then
+                MSG="Backend - Teste alpha: $FAILED erro(s) de $TOTAL testes. Report: $CIRCLE_BUILD_URL/artifacts/0/circleci_playwright/playwright-report/index.html"
+              else
+                MSG="Backend - Teste alpha: Todos os $TOTAL testes passaram. Report: $CIRCLE_BUILD_URL/artifacts/0/circleci_playwright/playwright-report/index.html"
+              fi
+            fi
+            curl --header "Content-Type: application/json" \
+              --request POST \
+              --data "{\"text\":\"$MSG\"}" \
+              "https://chat.googleapis.com/v1/spaces/AAQAB2H7-7I/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=IVVUiHFtrYOqxXruVdtf3w2KP4DlejBelwgoTJQmIUQ"
 
 workflows:
   version: 2

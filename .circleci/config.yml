@@ -25,11 +25,11 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "SHA256:fp2ielY5C50hV9XC/fW2xBwo9rWYA0WjPyu3kzzy1iA raphaelrivas@hotmail.com"
-      - run:
-          name: Adicionar github.com ao known_hosts
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
+      # - run:
+      #     name: Adicionar github.com ao known_hosts
+      #     command: |
+      #       mkdir -p ~/.ssh
+      #       ssh-keyscan github.com >> ~/.ssh/known_hosts
       # - run :
       #     name: Verificar se chave SSH está configurada corretamente
       #     command: |
@@ -38,6 +38,7 @@ jobs:
           name: Clonar e instalar dependências
           command: |
             # git clone https://github.com/yxuo/circleci_playwright
+            GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa_fingerprint'
             git clone ssh://git@github.com:yxuo/circleci_playwright_priv.git
             cd circleci_playwright
             npm install

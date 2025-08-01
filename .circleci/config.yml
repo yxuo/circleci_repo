@@ -29,6 +29,8 @@ jobs:
           name: Clonar e instalar dependências
           command: |
             # git clone https://github.com/yxuo/circleci_playwright
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:yxuo/circleci_playwright_priv.git
             cd circleci_playwright
             npm install
